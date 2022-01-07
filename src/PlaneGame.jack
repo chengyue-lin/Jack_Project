@@ -1,0 +1,147 @@
+class PlaneGame{
+    field Plane plane;     // my plane
+    field int direction;   // my plane's direction
+    field int fire;        // my plane's fire option
+    field Enemy enemy1;    // enemy 1 plane
+    field Enemy enemy2;    // enemy 1 plane
+    field int move1, move2; // for enemy plane moving direction
+    field int destory1, destory2;   //help for dispose the enemy planes
+    field int choice;         // which enemy will be destory
+    field int counter;        // count how many enemy plane, we had already destory.
+    constructor PlaneGame new() {
+      do Output.printString("This is Plane Battle Game.");
+      do Output.printString("Please use direction keys to play this game.");
+      do Output.printString("And use Space to fire. Also, you can use q to quit the game.");
+      do Output.printString("It will hold around 10 seconds then automatic run the game.");
+      do Output.println();
+      do Sys.wait(11000);  // delay for read my instruction.
+      do Screen.clearScreen();   // clean the instruction. 
+      let plane = Plane.new(200, 16);     // my plane instance
+      let enemy1 = Enemy.new( 20,6);      // enemy 1 plane instance
+      let enemy2 = Enemy.new(90, 20);     //enemy 2 plane instance
+      let direction = 0;         // my plane don't move.
+      return this;
+   }
+
+   method void dispose() {
+      do plane.dispose();     //dispose all the instances.
+      do enemy1.dispose();
+      do enemy2.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void movePlane() {
+      if (direction = 1) {    //move up
+         do plane.moveUp();
+      }
+      if (direction = 2) {    // move down
+         do plane.moveDown();
+      }
+      if (direction = 3) {    // move left
+         do plane.moveLeft(); 
+      }
+      if (direction = 4) {    // move right
+         do plane.moveRight(); 
+      }
+      do Sys.wait(20);  // delays the next movement
+      return;
+   }
+
+   method void planeFire(){
+      
+      if (fire = 1) {      // determine which enemy plane we will destory
+         let choice = plane.fire(enemy1.getColumn(), enemy1.getRow(), enemy2.getColumn(), enemy2.getRow()); 
+         
+         if(choice = 1){   // destory the first enemy plane
+            let destory1 = 1;
+            do enemy1.destoryPlane();
+            do enemy1.dispose();
+            let counter = counter +1 ;    //counter add 1
+            return;
+         }
+         if(choice = 2){      // destory the second enemy plane
+            let destory2 = 1;
+            do enemy2.destoryPlane();
+            do enemy2.dispose();
+            let counter = counter +1 ;    //counter add 1
+            return;
+         } 
+      }
+      
+      return;
+   }
+
+   method void enemy1Move(){
+
+      if (move1 = 1){
+         let move1 = enemy1.moveRight();  // make enemy 1 plane move right
+      }
+      if (move1 = 2){
+         let move1 = enemy1.moveLeft();   // make enemy 1 plane move left
+      }
+      return;
+   }
+
+   method void enemy2Move(){
+      
+      if (move2 = 1){
+         let move2 = enemy2.moveRight();  // make enemy 2 plane move right
+      }
+      if (move2 = 2){
+         let move2 = enemy2.moveLeft();   // make enemy 2 plane move left
+      }
+      return;
+   }
+   method void run() {
+      var char key;  // the key currently pressed by the user
+      var boolean exit;
+      let exit = false;
+      let move1 = 1;    // make sure enemy 1 plane move right first
+      let move2 = 1;    // make sure enemy 2 plane move right first
+      let destory1 = 0;  //destory enemy 1 plane if it is 1
+      let destory2 = 0;  // destory enemy 2 plane if it is 1
+      let counter = 0;     // initial the counter to 0
+      while (~exit) {
+         if(~(destory1=1)){   //destory1 != 1
+            do enemy1Move();
+         }
+         if(~(destory2=1)){   //destory2 != 1
+            do enemy2Move();
+         }
+         let key = Keyboard.keyPressed();
+         if (key = 81)  { // q key
+            let exit = true; 
+         }     
+         if (key = 32)  {  // space for fire
+            let fire = 1; 
+            do planeFire();
+         }    
+         if (key = 131) {  // up arrow
+            let direction = 1; 
+            do movePlane();
+         }   
+         if (key = 133) {  // down arrow
+            let direction = 2; 
+            do movePlane();
+         }   
+         if (key = 130) { // left arrow
+            let direction = 3; 
+            do movePlane();
+         }   
+         if (key = 132) {    // right arrow
+            let direction = 4; 
+            do movePlane();
+         }
+         if (counter = 2){
+            do Output.printString("You win.");
+            do Output.println();
+            do Sys.wait(100);  
+            return;     // end the game
+         }   
+
+         
+     } 
+     return;
+   }
+}

@@ -1,0 +1,136 @@
+class Enemy{
+    field int row, column, location; // for enemy plane
+    constructor Enemy new(int rows, int columns ) {     // constructor
+      let row = rows;
+      let column = columns;
+      let location  = (512/16)* row+column; 
+      do draw(location);
+      return this;
+   }
+   // for enemy plane
+   method void draw(int location) {
+   //copy from the nand2tetris.org website. 
+   //The github of JackBitmap. The website 
+   //is https://github.com/ErikUmble/JackBitmapEditor. 
+	var int memAddress; 
+	let memAddress = 16384+location;
+	// column 0
+	do Memory.poke(memAddress, 1024);
+	do Memory.poke(memAddress +32, 1536);
+	do Memory.poke(memAddress +64, 3840);
+	do Memory.poke(memAddress +96, 3840);
+	do Memory.poke(memAddress +128, 3840);
+	do Memory.poke(memAddress +160, 1536);
+	do Memory.poke(memAddress +192, -1);
+	do Memory.poke(memAddress +224, -1);
+	do Memory.poke(memAddress +256, -1);
+	do Memory.poke(memAddress +288, 7);
+	do Memory.poke(memAddress +320, 14);
+	do Memory.poke(memAddress +352, 28);
+	do Memory.poke(memAddress +384, 56);
+	do Memory.poke(memAddress +416, 112);
+	do Memory.poke(memAddress +448, 224);
+	do Memory.poke(memAddress +480, 448);
+	do Memory.poke(memAddress +512, 896);
+	do Memory.poke(memAddress +544, 1792);
+	do Memory.poke(memAddress +576, 3584);
+	do Memory.poke(memAddress +608, 7168);
+	do Memory.poke(memAddress +640, 14336);
+	do Memory.poke(memAddress +672, 28672);
+	do Memory.poke(memAddress +704, -8192);
+	do Memory.poke(memAddress +736, -16384);
+	do Memory.poke(memAddress +768, ~32767);
+	// column 1
+	do Memory.poke(memAddress +1, 256);
+	do Memory.poke(memAddress +33, 768);
+	do Memory.poke(memAddress +65, 1920);
+	do Memory.poke(memAddress +97, 1920);
+	do Memory.poke(memAddress +129, 1920);
+	do Memory.poke(memAddress +161, 768);
+	do Memory.poke(memAddress +193, -1);
+	do Memory.poke(memAddress +225, -1);
+	do Memory.poke(memAddress +257, -1);
+	do Memory.poke(memAddress +321, ~32767);
+	do Memory.poke(memAddress +353, -16384);
+	do Memory.poke(memAddress +385, -8192);
+	do Memory.poke(memAddress +417, 28672);
+	do Memory.poke(memAddress +449, 14336);
+	do Memory.poke(memAddress +481, 7168);
+	do Memory.poke(memAddress +513, 3584);
+	do Memory.poke(memAddress +545, 1792);
+	do Memory.poke(memAddress +577, 896);
+	do Memory.poke(memAddress +609, 448);
+	do Memory.poke(memAddress +641, 224);
+	do Memory.poke(memAddress +673, 112);
+	do Memory.poke(memAddress +705, 56);
+	do Memory.poke(memAddress +737, 29);
+	do Memory.poke(memAddress +769, 15);
+	do Memory.poke(memAddress +801, 7);
+	do Memory.poke(memAddress +833, 7);
+	do Memory.poke(memAddress +865, 7);
+	// column 2
+	do Memory.poke(memAddress +194, 7);
+	do Memory.poke(memAddress +226, 7);
+	do Memory.poke(memAddress +258, 7);
+	do Memory.poke(memAddress +290, 7);
+	do Memory.poke(memAddress +322, 3);
+	do Memory.poke(memAddress +354, 1);
+	return;
+    }
+
+    method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+   method int moveRight() {     // enemy plane move right
+      var int size;
+	  if (column<29) {
+        
+		let size = 40;
+        do Screen.setColor(false);      // draw white rectangle
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let column = column+1;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+        do Sys.wait(30);  // delays the next movement
+      }
+      if (column = 29){     // when get the rightmost of screen then change direction
+          return 2;
+      }
+      
+      return 1;
+   }
+
+   method int moveLeft() {
+      var int size;
+	  if (column > 0) {     // enemy plane move left
+        
+		let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let column = column-1;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+        do Sys.wait(30);  // delays the next movement
+      }
+      if (column = 0){  // when get the leftmost of screen then change direction
+          return 1;
+      }
+      return 2;
+   }
+
+   method int getRow(){     // get the enemy plane row
+       return row;
+   }
+
+   method int getColumn(){  // get the enemy plane column
+       return column;
+   }
+    method void destoryPlane(){     // erase the enemy plane to draw the white rectangle
+        var int size;
+        let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        return;
+    }
+}

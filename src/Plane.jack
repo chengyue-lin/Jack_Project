@@ -1,0 +1,169 @@
+class Plane{
+    field int row, column, location; // for our plane's row, column and location help us to draw in the screen.
+
+    constructor Plane new(int rows, int columns) { 		// constructor
+      let row = rows;
+      let column = columns;
+      let location  = (512/16)* row+column; 
+      do draw(location);
+      return this;
+   }
+
+   // for our own plane
+   method void draw(int location) {			// draw my plane
+   //copy from the nand2tetris.org website. 
+   //The github of JackBitmap. The website 
+   //is https://github.com/ErikUmble/JackBitmapEditor. 
+	var int memAddress; 
+	let memAddress = 16384+location;
+	// column 0
+	do Memory.poke(memAddress +192, ~32767);
+	do Memory.poke(memAddress +224, -16384);
+	do Memory.poke(memAddress +256, -8192);
+	do Memory.poke(memAddress +288, 28672);
+	do Memory.poke(memAddress +320, 14336);
+	do Memory.poke(memAddress +352, 7168);
+	do Memory.poke(memAddress +384, 3584);
+	do Memory.poke(memAddress +416, 1792);
+	do Memory.poke(memAddress +448, 896);
+	do Memory.poke(memAddress +480, 448);
+	do Memory.poke(memAddress +512, 224);
+	do Memory.poke(memAddress +544, 112);
+	do Memory.poke(memAddress +576, 56);
+	do Memory.poke(memAddress +608, -4);
+	do Memory.poke(memAddress +640, -2);
+	do Memory.poke(memAddress +672, -1);
+	do Memory.poke(memAddress +704, 3072);
+	do Memory.poke(memAddress +736, 7680);
+	do Memory.poke(memAddress +768, 7680);
+	do Memory.poke(memAddress +800, 7680);
+	do Memory.poke(memAddress +832, 7680);
+	do Memory.poke(memAddress +864, 3072);
+	do Memory.poke(memAddress +896, 2048);
+	// column 1
+	do Memory.poke(memAddress +1, 2);
+	do Memory.poke(memAddress +33, 2);
+	do Memory.poke(memAddress +65, 2);
+	do Memory.poke(memAddress +97, 7);
+	do Memory.poke(memAddress +129, 7);
+	do Memory.poke(memAddress +161, 7);
+	do Memory.poke(memAddress +193, 15);
+	do Memory.poke(memAddress +225, 24);
+	do Memory.poke(memAddress +257, 56);
+	do Memory.poke(memAddress +289, 112);
+	do Memory.poke(memAddress +321, 224);
+	do Memory.poke(memAddress +353, 448);
+	do Memory.poke(memAddress +385, 896);
+	do Memory.poke(memAddress +417, 1792);
+	do Memory.poke(memAddress +449, 3584);
+	do Memory.poke(memAddress +481, 7168);
+	do Memory.poke(memAddress +513, 14336);
+	do Memory.poke(memAddress +545, 28672);
+	do Memory.poke(memAddress +577, -8192);
+	do Memory.poke(memAddress +609, -1);
+	do Memory.poke(memAddress +641, -1);
+	do Memory.poke(memAddress +673, -1);
+	do Memory.poke(memAddress +705, 768);
+	do Memory.poke(memAddress +737, 1920);
+	do Memory.poke(memAddress +769, 1920);
+	do Memory.poke(memAddress +801, 1920);
+	do Memory.poke(memAddress +833, 1920);
+	do Memory.poke(memAddress +865, 768);
+	do Memory.poke(memAddress +897, 256);
+	// column 2
+	do Memory.poke(memAddress +610, 1);
+	do Memory.poke(memAddress +642, 3);
+	do Memory.poke(memAddress +674, 7);
+	return;
+   }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void moveUp() {		// move up
+      var int size;
+	  if (row > 1) {
+        
+		let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let row = row - 4;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+      }
+      return;
+   }
+
+   method void moveDown() {		// move down
+      var int size;
+	  if (row < 210) {
+		let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let row = row + 4;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+      }
+      return;
+   }
+
+   method void moveLeft() {		// move left
+      var int size;
+	  if (column > 0) {
+        
+		let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let column = column-1;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+      }
+      return;
+   }
+   method void moveRight() {	// move right
+      var int size;
+	  if (column<29) {
+        
+		let size = 40;
+        do Screen.setColor(false);
+		do Screen.drawRectangle(column*16, row, (column*16)+ size, row + size);
+        let column = column+1;
+        let location  = (512/16)* row+column; 
+        do draw(location);
+      }
+      return;
+   }
+
+   method int fire(int c1, int r1, int c2, int r2){		// for firing the bullet
+    var int size, x, y;
+	let x= column;
+    let y= row;
+    let size = 15;
+
+    while (y>1){
+        do Screen.setColor(false);		
+        do Screen.drawRectangle(x*16, y, (x*16)+ size, y + size);
+        if(Math.abs(x - c1)<3){		// check whether beat enemy 1 plane
+			if(Math.abs(y - r1)<1){
+				return 1; 
+			}
+		}
+		if(Math.abs(x - c2)<3){		// check whether beat enemy 2 plane
+			if(Math.abs(y - r2)<1){
+				return 2; 
+			}
+		}
+        let y = y- 2;
+        do Screen.setColor(true);	// draw bullet rectangle
+        do Screen.drawRectangle(x*16, y, (x*16) + size, y + size);
+        do Sys.wait(15);  // delays the next movement
+    }
+	do Sys.wait(20);		// for showing in the top of the screen then disappear. 
+	do Screen.setColor(false);		// draw white rectangle
+    do Screen.drawRectangle(x*16, y, (x*16)+ size, y + size);
+    return 0;
+   }
+
+}
